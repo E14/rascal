@@ -10,7 +10,7 @@ defmodule Rascal.Prank do
 	defp identify(pid) do
 		info = Process.info(pid)
 		IO.inspect(info)
-		{:link, pid}
+		:link
 	end
 
 	defp peek(any, pid) do
