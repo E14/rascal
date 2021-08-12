@@ -18,7 +18,7 @@ defmodule Rascal.Pidify do
 	def pidify("#PID" <> a), do: :erlang.list_to_pid(to_charlist(a))
 	def pidify(a) when is_binary(a), do: :erlang.list_to_pid('<#{a}>')
 	def pidify(a) when is_atom(a), do: pid_from_name(a)
-	def pidify(a, b \\ 0) when is_integer(a) and a >= 0 and is_integer(b) and b >= 0, do: pid(0, a, 0)
+	def pidify(a, b \\ 0) when is_integer(a) and a >= 0 and is_integer(b) and b >= 0, do: pid(0, a, b)
 
 	@doc """
 	Turn 3 non-negative integers into a PID.
