@@ -4,7 +4,6 @@ defmodule Rascal do
 	"""
 	require Logger
 	alias Rascal.Prank
-	use Application
 
 	@well_known_processes %{
 		Rascal: true,
@@ -12,27 +11,6 @@ defmodule Rascal do
 		erts_literal_area_collector: true,
 		socket_registry: true
 	}
-
-	@impl Application
-	def start(_type, _args) do
-		cfg = %{
-			Application.fetch_env!(__MODULE__, :key1),
-		}
-		Logger.info("Rascal will prank random processes.")
-		children = [
-			{GenServer, }
-		]
-		opts = [
-			strategy: :one_for_one,
-			# name: Vexel.Supervisor,
-			restart: :transient
-		]
-		{:ok, _pid} = Supervisor.start_link(children, opts)
-	end
-
-	@impl Application
-	def stop(_state) do
-	end
 
 	@doc """
 	Find out whether running in IEx repl. This is used to avoid parent processes necessary for

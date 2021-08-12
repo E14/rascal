@@ -9,12 +9,16 @@ defmodule Rascal.Application do
 	def start(_type, _args) do
 		children = [
 			# Starts a worker by calling: Rascal.Worker.start_link(arg)
-			# {Rascal.Worker, arg}
+			{Rascal.Scheduler, []}
 		]
 
 		# See https://hexdocs.pm/elixir/Supervisor.html
 		# for other strategies and supported options
 		opts = [strategy: :one_for_one, name: Rascal.Supervisor]
 		Supervisor.start_link(children, opts)
+	end
+
+	@impl Application
+	def stop(_state) do
 	end
 end
