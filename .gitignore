@@ -24,3 +24,7 @@ rascal-*.tar
 
 # Temporary files, for example, from tests.
 /tmp/
+
+# Sublime Text project files
+*.sublime-project
+*.sublime-workspace
