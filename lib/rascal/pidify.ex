@@ -1,6 +1,6 @@
 defmodule Rascal.Pidify do
 	@moduledoc """
-	
+	A utility module to work with Beam process identifiers.
 	"""
 
 	@doc """
@@ -8,10 +8,20 @@ defmodule Rascal.Pidify do
 
 	# Examples
 	```
-	iex> self() == pidify(self())
+	iex> self() == #{__MODULE__}.pidify(self())
 	true
-	iex> pidify(1)
+	iex> #{__MODULE__}.pidify(1)
 	#PID<0.1.0>
+	iex> #{__MODULE__}.pidify("#PID<0.0.0>")
+	#PID<0.0.0>
+	iex> #{__MODULE__}.pidify("0.0.1")
+	#PID<0.0.1>
+	iex> #{__MODULE__}.pidify(1, 2)
+	#PID<0.1.2>
+	iex> #{__MODULE__}.pidify(:erts_code_purger)
+	...> |> Process.info
+	...> |> Keyword.get(:registered_name)
+	:erts_code_purger
 	```
 	"""
 	def pidify(a) when is_pid(a), do: a
@@ -22,6 +32,14 @@ defmodule Rascal.Pidify do
 
 	@doc """
 	Turn 3 non-negative integers into a PID.
+
+	# Examples
+	```
+	iex> self() == #{__MODULE__}.pidify(self())
+	true
+	iex> #{__MODULE__}.pid(0, 2, 3)
+	#PID<0.2.3>
+	```
 	"""
 	def pid(a, b, c) when is_integer(a) and is_integer(b) and is_integer(c) do
 		:erlang.list_to_pid('<#{a}.#{b}.#{c}>')
@@ -29,6 +47,14 @@ defmodule Rascal.Pidify do
 
 	@doc """
 	Finds a PID for a given registered name (atom).
+
+	# Examples
+	```
+	iex> #{__MODULE__}.pid_from_name(:erts_code_purger)
+	...> |> Process.info
+	...> |> Keyword.get(:registered_name)
+	:erts_code_purger
+	```
 	"""
 	def pid_from_name(a) when is_atom(a) do
 		Process.list()
