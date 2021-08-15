@@ -1,6 +1,9 @@
 defmodule Rascal.Prank do
 	require Logger
 
+	@doc """
+	Performs a prank on the given target.
+	"""
 	def perform(pid) do
 		identify(pid)
 		|> peek(pid)
@@ -25,8 +28,8 @@ defmodule Rascal.Prank do
 	@doc """
 	Sends an exit signal to a process.
 	
-	This is mostly guaranteed to kill a process, but behaves differently than a crash. Processes
-	stuck in NIFs may ignore even this.
+	This is almost guaranteed to kill a process (with `:kill` as argument), but behaves differently
+	than a crash. Processes stuck in NIFs may ignore even this.
 	"""
 	def exit_kill(pid, reason \\ :kill) do
 		Rascal.pidify(pid)
@@ -36,6 +39,8 @@ defmodule Rascal.Prank do
 	@doc """
 	Spawns a new process that links itself to another process and then terminates by raising an
 	error.
+
+	This is the most "realistic" way of killing a process.
 	"""
 	def link_kill(pid, message \\ "psych!") when is_pid(pid) do
 		spawn(fn -> :erlang.link(pid); raise message end)

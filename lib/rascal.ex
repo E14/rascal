@@ -1,6 +1,6 @@
 defmodule Rascal do
 	@moduledoc """
-	
+	A chaos monkey for Beam processes.
 	"""
 	require Logger
 	alias Rascal.Prank
@@ -25,7 +25,7 @@ defmodule Rascal do
 	end
 
 	@doc """
-	Tries to bring down a random process
+	Try to bring down a random process.
 	"""
 	def prank!() do
 		target() |> prank!()
@@ -39,6 +39,9 @@ defmodule Rascal do
 		pidify(pid) |> prank!()
 	end
 
+	@doc """
+	Find a target.
+	"""
 	def target() do
 		Process.list
 		|> Enum.filter(fn pid -> !@well_known_processes[Process.info(pid)[:registered_name]] end)
