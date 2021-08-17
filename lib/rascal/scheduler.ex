@@ -1,8 +1,10 @@
 defmodule Rascal.Scheduler do
 	use GenServer
 	require Logger, as: Log
+	alias Rascal.Pidify
 
-	@interval {500, 5000}
+	@interval {1000, 10000}
+	@check_after 1000
 
 	def start_link(init_arg) do
 		GenServer.start_link(__MODULE__, init_arg, [])
@@ -16,9 +18,18 @@ defmodule Rascal.Scheduler do
 	end
 
 	@impl true
-	def handle_info(msg = :run, state) do
+	def handle_info(:run, state) do
 		scheme()
-		Log.info("Handle info #{inspect(msg)} #{inspect(state)}")
+		{pid, name} = Rascal.prank!()
+		if name != nil do
+			Process.send_after(self(), {:check, pid, name}, @check_after)
+		end
+		{:noreply, state}
+	end
+
+	@impl true
+	def handle_info({:check, pid, name}, state) when is_atom(name) do
+		validate!(pid, name)
 		{:noreply, state}
 	end
 
@@ -26,8 +37,19 @@ defmodule Rascal.Scheduler do
 		Process.send_after(self(), :run, interval())
 	end
 
+	@doc """
+	Verify that a named process was restarted.
+	"""
+	def validate!(pid, name) when is_pid(pid) do
+		if !Pidify.pid_from_name(name) do
+			Log.error("Named proccess #{name} was not restarted within #{@check_after}ms")
+		else
+			Log.debug("Found named process #{inspect(name)} as #{inspect(Pidify.pid_from_name(name))} after #{@check_after}")
+		end
+	end
+
 	defp interval() do
 		{min, max} = @interval
-		Float.floor(min + (max - min) * :rand.uniform())
+		trunc(min + (max - min) * :rand.uniform())
 	end
 end

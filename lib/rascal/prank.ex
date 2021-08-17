@@ -1,29 +1,28 @@
 defmodule Rascal.Prank do
 	require Logger
+	alias Rascal.Pidify
 
 	@doc """
 	Performs a prank on the given target.
 	"""
 	def perform(pid) do
+		name = Pidify.name_from_pid(pid)
+
 		identify(pid)
-		|> peek(pid)
 		|> kill(pid)
+
+		{pid, name}
 	end
 
+	# Identify which kill method to use.
 	defp identify(pid) do
-		info = Process.info(pid)
-		IO.inspect(info)
+		_info = Process.info(pid)
 		:link
 	end
 
-	defp peek(any, pid) do
-		Logger.info("Peek: #{inspect({any, pid})}")
-		any
-	end
-
 	defp kill(:link, pid), do: link_kill(pid)
-	defp kill(:kill, pid), do: exit_kill(pid)
-	defp kill(:normal, pid), do: exit_kill(pid, :psych!)
+	defp kill(:kill, pid), do: exit_kill(pid, :kill)
+	defp kill(:exit, pid), do: exit_kill(pid, :psych!)
 
 	@doc """
 	Sends an exit signal to a process.

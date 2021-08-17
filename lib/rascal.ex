@@ -6,10 +6,15 @@ defmodule Rascal do
 	alias Rascal.Prank
 
 	@well_known_processes %{
-		Rascal: true,
+		init: true,
 		erts_code_purger: true,
+		erl_prim_loader: true,
+		kernel_refc: true, # IEx stops if this is targeted
 		erts_literal_area_collector: true,
-		socket_registry: true
+		socket_registry: true,
+		'Elixir.Mix.ProjectStack': true, # This is not restarted automatically
+		'Elixir.Mix.TasksServer': true, # This is not restarted automatically
+		'Elixir.Rascal.Application': true
 	}
 
 	@doc """
@@ -39,32 +44,38 @@ defmodule Rascal do
 		pidify(pid) |> prank!()
 	end
 
+	defp filter_pid(pid) do
+		info = Process.info(pid)
+
+		!@well_known_processes[info[:registered_name]]
+			and pid != pidify("0.1.0")
+	end
+
 	@doc """
 	Find a target.
 	"""
 	def target() do
 		Process.list
-		|> Enum.filter(fn pid -> !@well_known_processes[Process.info(pid)[:registered_name]] end)
+		|> Enum.filter(&filter_pid/1)
 		|> Enum.random
 	end
 
 	@doc """
-	Returns processes without links
+	Returns processes without links.
 	"""
 	def loners() do
 		Process.list()
 		|> Stream.filter(fn p -> Enum.count(Process.info(p)[:links]) == 0 end)
-		|> Enum.into([])
+		|> Enum.to_list()
 	end
 
 	defp shout(pid) do
 		info = Process.info(pid)
-		Logger.info("Targeting pid #{pid}, with name #{info[:registered_name]}")
+		Logger.info("Targeting #{inspect(pid)} with name `#{inspect(info[:registered_name])}`")
 		pid
 	end
 
 	defdelegate pidify(pid), to: Rascal.Pidify
-	defdelegate pidify(pid, message), to: Rascal.Pidify
 
 	defp get_config(key) when is_atom(key) do
 		Application.fetch_env!(__MODULE__, key)

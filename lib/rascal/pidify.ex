@@ -59,6 +59,14 @@ defmodule Rascal.Pidify do
 	def pid_from_name(a) when is_atom(a) do
 		Process.list()
 		|> Enum.find(fn p -> Process.info(p)[:registered_name] == a end)
+		|| :global.whereis_name(a)
+	end
+
+	@doc """
+	Returns a registered name for a PID.
+	"""
+	def name_from_pid(pid) when is_pid(pid) do
+		Process.info(pid)[:registered_name]
 	end
 end
 
