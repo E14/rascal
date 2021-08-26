@@ -1,7 +1,9 @@
 # Rascal
 
-Rascal is a [chaos monkey](https://netflix.github.io/chaosmonkey/) for Beam processes. Rascal is
-meant primarily as a development aid, but the aim is for it to eventually be ready for production.
+Rascal is a [chaos monkey](https://netflix.github.io/chaosmonkey/) for Beam processes.
+
+Rascal is meant primarily as a development and testing aid, but the long-term aim is for it to
+eventually be ready for production deployment.
 
 ## Installation
 
