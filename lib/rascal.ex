@@ -76,8 +76,4 @@ defmodule Rascal do
 	end
 
 	defdelegate pidify(pid), to: Rascal.Pidify
-
-	defp get_config(key) when is_atom(key) do
-		Application.fetch_env!(__MODULE__, key)
-	end
 end

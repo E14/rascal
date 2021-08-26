@@ -18,7 +18,7 @@ defmodule Rascal.Application do
 		Supervisor.start_link(children, opts)
 	end
 
-	@impl Application
-	def stop(_state) do
+	defp get_config(key, default \\ nil) when is_atom(key) do
+		Application.get_env(:rascal, key, default)
 	end
 end
