@@ -5,16 +5,25 @@ defmodule Rascal do
 	require Logger
 	alias Rascal.Prank
 
+	# Well-known processes are processes that we don't want to kill for various reasons. Eg. we
+	# don't want to try to kill the init process, we need to assume it's stable.
 	@well_known_processes %{
-		init: true,
-		erts_code_purger: true,
-		erl_prim_loader: true,
-		kernel_refc: true, # IEx stops if this is targeted
-		erts_literal_area_collector: true,
-		socket_registry: true,
-		'Elixir.Mix.ProjectStack': true, # This is not restarted automatically
-		'Elixir.Mix.TasksServer': true, # This is not restarted automatically
-		'Elixir.Rascal.Application': true
+		:init => true,
+		:application_controller => true,
+		Rascal.Application => true,
+	}
+
+	# Well-known processes that, in the opinion of the author, should not require special handling.
+	# They should rather be resilient against linked processes crashing (trapping the signal), or be
+	# supervised processes instead.
+	@well_known_processes2 %{
+		:erts_code_purger => true,
+		:erl_prim_loader => true,
+		:kernel_refc => true, # IEx stops if this is targeted
+		:erts_literal_area_collector => true,
+		:socket_registry => true,
+		Mix.ProjectStack => true, # This is not restarted automatically
+		Mix.TasksServer => true, # This is not restarted automatically
 	}
 
 	@doc """
@@ -48,6 +57,7 @@ defmodule Rascal do
 		info = Process.info(pid)
 
 		!@well_known_processes[info[:registered_name]]
+			and !@well_known_processes2[info[:registered_name]]
 			and pid != pidify("0.1.0")
 	end
 
