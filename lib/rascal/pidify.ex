@@ -49,11 +49,17 @@ defmodule Rascal.Pidify do
 	Finds a PID for a given registered name (atom).
 
 	# Examples
+	Get PID for a known name
 	```
-	iex> #{__MODULE__}.pid_from_name(:erts_code_purger)
+	iex> #{__MODULE__}.pid_from_name(:init)
 	...> |> Process.info
 	...> |> Keyword.get(:registered_name)
-	:erts_code_purger
+	:init
+	```
+	Get PID for a non-existing name
+	```
+	iex> #{__MODULE__}.pid_from_name(:this_name_does_not_exist)
+	nil
 	```
 	"""
 	@spec pid_from_name(atom) :: pid | nil
