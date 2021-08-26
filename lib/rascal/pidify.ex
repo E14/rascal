@@ -56,10 +56,14 @@ defmodule Rascal.Pidify do
 	:erts_code_purger
 	```
 	"""
+	@spec pid_from_name(atom) :: pid | nil
 	def pid_from_name(a) when is_atom(a) do
-		Process.list()
-		|> Enum.find(fn p -> Process.info(p)[:registered_name] == a end)
-		|| :global.whereis_name(a)
+		with :undefined <- :global.whereis_name(a) do
+			Process.list()
+			|> Enum.find(fn p -> name_from_pid(p) == a end)
+		else
+			pid -> pid
+		end
 	end
 
 	@doc """
