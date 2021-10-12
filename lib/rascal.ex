@@ -59,15 +59,23 @@ defmodule Rascal do
 		!@well_known_processes[info[:registered_name]]
 			and !@well_known_processes2[info[:registered_name]]
 			and pid != pidify("0.1.0")
+			and !supervisor?(info)
 	end
 
 	@doc """
 	Find a target.
 	"""
 	def target() do
-		Process.list
-		|> Enum.filter(&filter_pid/1)
+		targets()
 		|> Enum.random
+	end
+
+	@doc """
+	Generate a stream of valid target PIDs.
+	"""
+	def targets() do
+		Process.list
+		|> Stream.filter(&filter_pid/1)
 	end
 
 	@doc """
@@ -79,6 +87,21 @@ defmodule Rascal do
 		|> Enum.to_list()
 	end
 
+	@doc """
+	Returns processes that are a `Supervisor`.
+
+	This is a utility function for debugging. As there is no sane way to crash a
+	supervisor, this method should help with debugging
+	"""
+	def supervisors() do
+		Process.list()
+		|> Stream.filter(&supervisor?/1)
+		|> Enum.to_list()
+	end
+
+	defp supervisor?(pid) when is_pid(pid), do: supervisor?(Process.info(pid))
+	defp supervisor?(info), do: match?({:supervisor, _, 1}, info[:dictionary][:"$initial_call"])
+
 	defp shout(pid) do
 		info = Process.info(pid)
 		Logger.info("Targeting #{inspect(pid)} with name `#{inspect(info[:registered_name])}`")
@@ -86,4 +109,5 @@ defmodule Rascal do
 	end
 
 	defdelegate pidify(pid), to: Rascal.Pidify
+	defdelegate hold(), to: Rascal.Scheduler
 end
