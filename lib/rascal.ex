@@ -39,6 +39,15 @@ defmodule Rascal do
 	end
 
 	@doc """
+	Targets processes randomly with 50% chance of killing them.
+	"""
+	def thanos_snap!() do
+		targets()
+		|> Stream.filter(fn _ -> :rand.uniform() > 0.5 end)
+		|> Enum.each(&prank!/1)
+	end
+
+	@doc """
 	Try to bring down a random process.
 	"""
 	def prank!() do
