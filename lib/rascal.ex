@@ -26,6 +26,13 @@ defmodule Rascal do
 		:socket_registry => true,
 	}
 
+	# Well-known processes that have - for whatever reason - no process name to be identified by.
+	# Using the initial call field seems to be the best choice to identify them.
+	@well_known_initial_calls %{
+		# Usually PID 0.6.0, crashes Elixir with message "stem process <0.6.0> terminated"
+		{:prim_file, :start, 0} => true,
+	}
+
 	@doc """
 	Find out whether running in IEx repl. This is used to avoid parent processes necessary for
 	running the repl.
@@ -67,6 +74,7 @@ defmodule Rascal do
 
 		!@well_known_processes[info[:registered_name]]
 			and !@well_known_processes2[info[:registered_name]]
+			and !@well_known_initial_calls[info[:initial_call]]
 			and pid != pidify("0.1.0")
 			and !supervisor?(info)
 	end
@@ -115,7 +123,7 @@ defmodule Rascal do
 
 	defp shout(pid) do
 		info = Process.info(pid)
-		Logger.info("Targeting #{inspect(pid)} with name `#{inspect(info[:registered_name])}`")
+		Logger.info("Targeting #{inspect(pid)} with name `#{inspect(info[:registered_name])}` and initial call `#{inspect(info[:initial_call])}`")
 		pid
 	end
 
