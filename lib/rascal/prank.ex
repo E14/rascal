@@ -27,8 +27,9 @@ defmodule Rascal.Prank do
 	@doc """
 	Sends an exit signal to a process.
 	
-	This is almost guaranteed to kill a process (with `:kill` as argument), but behaves differently
-	than a crash. Processes stuck in NIFs may ignore even this.
+	This is almost guaranteed to kill a process (with `:kill` as argument, any other value may be
+	trapped by the process), but behaves differently than a crash. Processes stuck in NIFs may
+	ignore even this.
 	"""
 	def exit_kill(pid, reason \\ :kill) do
 		Rascal.pidify(pid)
