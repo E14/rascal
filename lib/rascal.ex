@@ -11,6 +11,8 @@ defmodule Rascal do
 		:init => true,
 		:application_controller => true,
 		Rascal.Application => true,
+		Mix.ProjectStack => true, # Assuming Mix is not used in production, so this is fine
+		Mix.TasksServer => true, # Assuming Mix is not used in production, so this is fine
 	}
 
 	# Well-known processes that, in the opinion of the author, should not require special handling.
@@ -22,8 +24,6 @@ defmodule Rascal do
 		:kernel_refc => true, # IEx stops if this is targeted
 		:erts_literal_area_collector => true,
 		:socket_registry => true,
-		Mix.ProjectStack => true, # This is not restarted automatically
-		Mix.TasksServer => true, # This is not restarted automatically
 	}
 
 	@doc """
