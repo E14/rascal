@@ -63,7 +63,7 @@ defmodule Rascal do
 	end
 
 	@doc """
-	Find a target.
+	Select a target PID.
 	"""
 	def target() do
 		targets()
@@ -80,6 +80,8 @@ defmodule Rascal do
 
 	@doc """
 	Returns processes without links.
+
+	This is a utility function for debugging.
 	"""
 	def loners() do
 		Process.list()
