@@ -39,11 +39,11 @@ defmodule Rascal do
 	end
 
 	@doc """
-	Targets processes randomly with 50% chance of killing them.
+	Targets processes randomly with a `probability` chance of killing them.
 	"""
-	def thanos_snap!() do
+	def thanos_snap!(probability \\ 0.5) do
 		targets()
-		|> Stream.filter(fn _ -> :rand.uniform() > 0.5 end)
+		|> Stream.filter(fn _ -> :rand.uniform() > probability end)
 		|> Enum.each(&prank!/1)
 	end
 
