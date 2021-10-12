@@ -9,8 +9,8 @@ defmodule Rascal do
 	# don't want to try to kill the init process, we need to assume it's stable.
 	@well_known_processes %{
 		:init => true,
-		:application_controller => true,
-		Rascal.Application => true,
+		:application_controller => true, # Fair enough.
+		Rascal.Application => true, # Rascal would restart, but couldn't check reappearing process
 		Mix.ProjectStack => true, # Assuming Mix is not used in production, so this is fine
 		Mix.TasksServer => true, # Assuming Mix is not used in production, so this is fine
 	}
